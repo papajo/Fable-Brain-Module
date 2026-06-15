@@ -1,4 +1,4 @@
-import { FableModule, PresetExample, QAItem, VerificationCheck } from "./types";
+import { FableModule, PresetExample, QAItem, VerificationCheck, BonusPhrase } from "./types";
 
 export const FABLE_MODULES: FableModule[] = [
   {
@@ -230,3 +230,61 @@ export const EVALUATION_CHECKLIST: VerificationCheck[] = [
     checked: false
   }
 ];
+
+export const BONUS_PHRASES: BonusPhrase[] = [
+  {
+    id: "sub-agents",
+    title: "Launch sub agents",
+    description: "Used to initiate multiple Claude sessions running in parallel for increased productivity.",
+    templatePrompt: "Launch sub agents to resolve [Project Goal] asynchronously. Spin up Node Alpha focused on research and validation, and Node Beta focused on crafting modular components. Synthesize their results into a cohesive, zero-leak proposal.",
+    explanation: "This matches the 'Decisiveness' and 'Autonomy' standard. Instead of a single serial conversation, you instruct Claude to split its mental workspace into isolated agents solving distinct aspects of a task in parallel pipelines, finally acting as an orchestrator to unify them.",
+    simulationResponse: "🤖 [Orchestrator Activated - Spawning Sub-Agents]\n\n● Sub-Agent Alpha (Structural Analysis):\n'Analyzing repository tree. No TypeScript enum conflicts or configuration leaks found. Schema 0012_add_users matches standard DB specs.'\n\n● Sub-Agent Beta (Core Scripting):\n'Developing server endpoint /api/evaluate. Applying lazy loading for optional API integrations.'\n\n● Synthesis:\nAll Parallel sessions completed. Integrated endpoints are scaffolded safely.",
+    productivityCategory: "Parallel Collaboration"
+  },
+  {
+    id: "impl-spec",
+    title: "Write me an implementation spec",
+    description: "Used to create a detailed plan or specification before starting a build.",
+    templatePrompt: "Write me an implementation spec for [Feature Name]. List all types, file paths, precise schema structures, API routes, and potential edge cases. Wait for my confirmation and approval before writing any code.",
+    explanation: "Adheres to the 'Assess, Do Not Act Uninvited' module. Before touching production files, it creates an absolute blueprint detailing every single target file, preventing git noise and unintended structural drift.",
+    simulationResponse: "📄 [PROMPT COMPLIANT: IMPLEMENTATION SPEC]\n\n### 1. FILE ARCHITECTURE\n- `/src/components/BonusPanel.tsx` (Handles list renderings and animation states)\n- `/src/data.ts` (Appends global dataset of expert Claude-oriented phrases)\n\n### 2. CORE SCHEMAS\n- Interface `BonusPhrase`: `{ id: string, title: string, explanation: string... }`\n\n### 3. SELF-CORRECTION CHECKLIST\n- Test Case: Click triggers instant focus-lock on active container.\n\n(Awaiting your signal. Speak 'Approve' to begin development.)",
+    productivityCategory: "Structural Planning"
+  },
+  {
+    id: "interview-me",
+    title: "Interview me",
+    description: "Used to have Claude ask guiding questions to clarify project needs and requirements.",
+    templatePrompt: "Interview me. Ask exactly 5 laser-focused guiding questions to extract my precise requirements, design preferences, performance metrics, and safety boundaries for [Project Idea]. Wait for my answers before proposing code.",
+    explanation: "Aligns with 'Give the Reason, Not Just the Request'. Rather than guessing your business intentions or over-engineering a generic template, this forces a highly tailored question-and-answer cycle.",
+    simulationResponse: "🎙️ [ASSESSMENT ENGINE: INTERACTIVE QUESTIONS]\n\nTo build your project with 100% precision, please reply to these 5 criteria:\n\n1. SCALE: What is your target page-load limit? (e.g., sub-2s, mobile only?)\n2. BACKEND: Do we require persistent cloud databases, or are client-side states acceptable?\n3. STYLING: Do you have an established color palette, or should I select an off-white editorial aesthetic?\n4. KEY SENSITIVITY: Will this call any third-party APIs on the client-side?\n5. INTEGRATION: What standard packages are we allowed to install?",
+    productivityCategory: "Requirement Harvesting"
+  },
+  {
+    id: "verify-before-build",
+    title: "Verify before you build",
+    description: "Used to instruct Claude to outline how it will check its work and ensure quality before proceeding.",
+    templatePrompt: "Verify before you build. Outline precisely how you will verify code correctness, list the compiler/linter commands you intend to execute, and explain how we will catch potential regressions before making the changes.",
+    explanation: "Supports module 8 ('Keep Lessons & Check Your Work'). This establishes a pre-flight checklist, blocking hasty, unchecked edits and guaranteeing high product standards during complex updates.",
+    simulationResponse: "🛡️ [PRE-FLIGHT AUDIT PROTOCOL]\n\nBefore undertaking code modification, I will execute these verification checks:\n\n1. SYNTAX ASSESSMENT: I will run `npm run lint` immediately post-edit to prevent compile errors.\n2. BINDINGS AUDIT: Ensure all imports in `src/App.tsx` match exact module exports.\n3. RESPONSIVE CHECK: Test layout constraints down to 320px with custom flex classes.\n\nReady to proceed on your signal.",
+    productivityCategory: "Quality Assurance"
+  },
+  {
+    id: "build-skill",
+    title: "Based on this conversation, build me a skill",
+    description: "Used to create reusable skills from concrete tasks previously performed.",
+    templatePrompt: "Based on our conversation, build me a skill. Extract the successful design philosophies, custom code snippets, and rules we just established into a clean, reusable Markdown instruction guide for future sessions.",
+    explanation: "The ultimate productivity multiplier. By packaging successful problem-solving workflows into a persistent skill, you can bypass repetitive instructions in future sessions completely.",
+    simulationResponse: "📦 [SKILL SPECIFICATION ARCHIVED]\n\n# Skill: Sub-Second Premium Layouts\n\n### Core Philosophy\nUse high-density text contrast alongside spacious layout blocks. Limit decorative status indicators.\n\n### Code Pattern (Durable States)\n```typescript\nconst [selectedId, setSelectedId] = useState<string>(data[0].id);\n```",
+    productivityCategory: "Session Persistence"
+  },
+  {
+    id: "automate-this",
+    title: "Automate this",
+    description: "Used to streamline and automate repetitive tasks, with caution regarding the potential risks involved.",
+    templatePrompt: "Automate this task: [Task Details]. Create a clean, modular automation routine or script with explicit safety overrides, clear dry-run options, and detailed error logs to mitigate potential operational risks.",
+    explanation: "Eliminates tedious manual steps. It prompts Claude to write self-healing routines while emphasizing safety precautions—very important when modifying workspace folders.",
+    simulationResponse: "⚙️ [AUTOMATION BLUEPRINT ACTIVE]\n\nScript: `minify-and-sync-assets.sh`\n\n```bash\n#!/usr/bin/env bash\nset -euo pipefail\n\n# SAFETY TRIGGER\nif [ ! -d \"./src/assets\" ]; then\n  echo \"ERROR: Source directory not found. Halting execution to prevent files loss.\"\n  exit 1\nfi\n\n# DRY-RUN ENGINE\nif [[ \"${1:-}\" == \"--dry-run\" ]]; then\n  echo \"Executing safe dry-run simulation of asset minification... Completed.\"\n  exit 0\nfi\n```",
+    productivityCategory: "Workflow Optimization"
+  }
+];
+

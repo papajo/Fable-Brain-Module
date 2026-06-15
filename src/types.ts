@@ -46,3 +46,14 @@ export interface VerificationCheck {
   category: "prompt" | "model" | "harness";
   checked: boolean;
 }
+
+export interface BonusPhrase {
+  id: string;
+  title: string;
+  description: string;
+  templatePrompt: string;
+  explanation: string;
+  simulationResponse: string;
+  productivityCategory: string;
+}
+

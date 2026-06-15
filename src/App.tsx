@@ -22,12 +22,12 @@ import {
   Layers,
   Award
 } from "lucide-react";
-import { FABLE_MODULES, POCKET_PROMPT, PRESET_EXAMPLES, PRESET_QA, EVALUATION_CHECKLIST, FULL_SYSTEM_PROMPT } from "./data";
-import { FableModule, PresetExample, CompareResult } from "./types";
+import { FABLE_MODULES, POCKET_PROMPT, PRESET_EXAMPLES, PRESET_QA, EVALUATION_CHECKLIST, FULL_SYSTEM_PROMPT, BONUS_PHRASES } from "./data";
+import { FableModule, PresetExample, CompareResult, BonusPhrase } from "./types";
 
 export default function App() {
   // Navigation & Tabs
-  const [activeTab, setActiveTab] = useState<"modules" | "playground" | "casestudy" | "checklist">("modules");
+  const [activeTab, setActiveTab] = useState<"modules" | "playground" | "casestudy" | "checklist" | "bonus">("modules");
   
   // Selected Module
   const [selectedModule, setSelectedModule] = useState<FableModule>(FABLE_MODULES[0]);
@@ -53,6 +53,12 @@ export default function App() {
 
   // Interactive Checklist Toggles
   const [checklistItems, setChecklistItems] = useState(EVALUATION_CHECKLIST);
+
+  // Bonus Tab States
+  const [selectedBonusId, setSelectedBonusId] = useState<string>(BONUS_PHRASES[0].id);
+  const [copiedBonusId, setCopiedBonusId] = useState<string | null>(null);
+  const [simulationOutputs, setSimulationOutputs] = useState<Record<string, string>>({});
+  const [isSimulatingBonus, setIsSimulatingBonus] = useState<boolean>(false);
 
   // Load backend config status on startup
   useEffect(() => {
@@ -370,6 +376,18 @@ export default function App() {
             >
               <ClipboardCheck className="w-3.5 h-3.5 text-indigo-600" />
               <span>04. Design Checklist & Audit</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("bonus")}
+              className={`px-4 py-2 border-t border-l border-r transition-all duration-150 flex items-center gap-1.5 -mb-px ${
+                activeTab === "bonus"
+                  ? "bg-[#F5F2ED] border-[#1A1A1A] border-b-transparent text-[#1A1A1A] z-10"
+                  : "border-transparent text-[#1A1A1A]/60 hover:text-[#1A1A1A] hover:bg-slate-100/40"
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+              <span>05. Productivity Bonus Section</span>
             </button>
           </div>
 
@@ -997,6 +1015,212 @@ export default function App() {
 
               </div>
 
+            </div>
+          )}
+
+          {/* TAB 5: INTEGRATED EXPERT PRODUCTIVITY BONUS LAYOUT */}
+          {activeTab === "bonus" && (
+            <div id="bonus-section" className="space-y-6 duration-300 animate-fadeIn selection:bg-[#1A1A1A] selection:text-[#F5F2ED]">
+              <div className="border-b border-[#1A1A1A]/20 pb-4">
+                <span className="text-[10px] uppercase font-sans font-black text-[#1A1A1A]/60 tracking-wider">Operational Boosters</span>
+                <h2 className="text-2xl sm:text-3xl font-black font-serif text-[#1A1A1A] mt-1">
+                  Productivity Golden Phrases
+                </h2>
+                <p className="text-sm font-sans text-slate-600 mt-0.5">
+                  Unlock advanced workflows and double your collaboration velocity with Claude using these custom-built system triggers.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                {/* 6 Selectable Lists on left side */}
+                <div className="lg:col-span-5 space-y-2">
+                  <h3 className="font-sans text-[10px] font-bold uppercase tracking-widest border-b border-[#1A1A1A]/20 pb-2 mb-3">
+                    Bonus Power Prompts
+                  </h3>
+                  
+                  <div className="grid grid-cols-1 gap-2">
+                    {BONUS_PHRASES.map((phrase) => {
+                      const isSelected = selectedBonusId === phrase.id;
+                      return (
+                        <button
+                          key={phrase.id}
+                          id={`phrase-trigger-${phrase.id}`}
+                          onClick={() => {
+                            setSelectedBonusId(phrase.id);
+                          }}
+                          className={`w-full text-left p-3.5 border transition-all duration-150 flex flex-col justify-between group ${
+                            isSelected
+                              ? "bg-white border-[#1A1A1A] border-l-4 shadow-sm text-[#1A1A1A]"
+                              : "border-slate-200 bg-white/40 text-slate-700 hover:bg-white hover:border-[#1A1A1A]/40"
+                          }`}
+                        >
+                          <div className="flex items-start justify-between w-full">
+                            <div className="space-y-1">
+                              <span className="text-[9px] font-mono font-bold uppercase tracking-wider bg-amber-100 text-amber-900 px-1.5 py-0.5 border border-amber-200/50">
+                                {phrase.productivityCategory}
+                              </span>
+                              <h4 className="text-xs sm:text-sm font-bold font-sans tracking-tight pt-1">
+                                {phrase.title}
+                              </h4>
+                            </div>
+                            <ChevronRight className={`w-4 h-4 ml-2 transition-transform shrink-0 ${isSelected ? "translate-x-1" : "opacity-40 group-hover:opacity-100"}`} />
+                          </div>
+                          <span className="text-[11px] font-sans text-slate-500 mt-1.5 leading-snug font-medium line-clamp-1 group-hover:line-clamp-none transition-all">
+                            {phrase.description}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Main Focus Detail Block & Simulator */}
+                {(() => {
+                  const activePhrase = BONUS_PHRASES.find(p => p.id === selectedBonusId) || BONUS_PHRASES[0];
+                  const hasRunSimulation = !!simulationOutputs[activePhrase.id];
+                  
+                  const handleRunSim = () => {
+                    setIsSimulatingBonus(true);
+                    setTimeout(() => {
+                      setSimulationOutputs(prev => ({
+                        ...prev,
+                        [activePhrase.id]: activePhrase.simulationResponse
+                      }));
+                      setIsSimulatingBonus(false);
+                    }, 600);
+                  };
+
+                  const handleCopy = () => {
+                    navigator.clipboard.writeText(activePhrase.templatePrompt);
+                    setCopiedBonusId(activePhrase.id);
+                    setTimeout(() => setCopiedBonusId(null), 2000);
+                  };
+
+                  return (
+                    <div id="bonus-detail" className="lg:col-span-7 bg-white border border-[#1A1A1A] p-6 space-y-5">
+                      
+                      {/* Phrase Header */}
+                      <div className="border-b border-[#1A1A1A]/10 pb-4">
+                        <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#1A1A1A]/50">
+                          Phrase Category · {activePhrase.productivityCategory}
+                        </span>
+                        <h3 className="text-2xl font-black font-serif text-[#1A1A1A] mt-1">
+                          "{activePhrase.title}"
+                        </h3>
+                        <p className="text-sm font-sans italic text-slate-500 mt-1 font-medium">
+                          {activePhrase.description}
+                        </p>
+                      </div>
+
+                      {/* Explanation */}
+                      <div>
+                        <h4 className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#1A1A1A] mb-1">
+                          Productivity Rationale
+                        </h4>
+                        <p className="text-xs sm:text-sm text-slate-800 font-serif leading-relaxed">
+                          {activePhrase.explanation}
+                        </p>
+                      </div>
+
+                      {/* Template Box */}
+                      <div className="p-4 border-2 border-double border-[#1A1A1A] bg-[#F5F2ED]/60 rounded-none relative">
+                        <div className="flex justify-between items-start gap-4">
+                          <span className="text-[10px] font-sans font-black uppercase text-slate-500 tracking-wider">
+                            Golden Prompt Template
+                          </span>
+                          <span className="text-[9px] font-mono font-bold bg-amber-100 text-amber-900 border border-amber-200 px-1">
+                            Copy-Pasteable
+                          </span>
+                        </div>
+                        <p className="text-xs sm:text-sm text-slate-900 font-serif font-bold italic leading-relaxed py-2 mt-1">
+                          "{activePhrase.templatePrompt}"
+                        </p>
+                        <button
+                          id="btn-copy-bonus-prompt"
+                          onClick={handleCopy}
+                          className="mt-3 w-full py-2 bg-[#1A1A1A] text-white hover:bg-slate-800 transition-colors font-sans font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5"
+                        >
+                          {copiedBonusId === activePhrase.id ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-emerald-400" /> Copied Template!
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5" /> Copy Golden Template
+                            </>
+                          )}
+                        </button>
+                      </div>
+
+                      {/* Simulation Workspace section */}
+                      <div className="space-y-2.5">
+                        <div className="flex justify-between items-baseline">
+                          <h4 className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#1A1A1A]">
+                            Interactive Session Emulator
+                          </h4>
+                          <span className="text-[9px] font-sans font-semibold text-slate-400">
+                            Fable Behavior Test Sandbox
+                          </span>
+                        </div>
+
+                        {!hasRunSimulation && !isSimulatingBonus ? (
+                          <div className="border border-dashed border-[#1A1A1A]/30 p-6 flex flex-col items-center justify-center text-center bg-slate-50">
+                            <span className="w-8 h-8 rounded-full bg-[#1A1A1A]/5 flex items-center justify-center mb-2">
+                              <Terminal className="w-4 h-4 text-slate-400" />
+                            </span>
+                            <p className="text-[11px] font-sans font-black text-slate-600 uppercase tracking-widest">
+                              Session Standby
+                            </p>
+                            <p className="text-xs font-serif text-slate-500 mt-1 max-w-[280px]">
+                              See how Claude responds to the golden phrase under active prompting boundaries.
+                            </p>
+                            <button
+                              id="btn-simulate-bonus-outcome"
+                              onClick={handleRunSim}
+                              className="mt-4 px-4 py-1.5 border border-[#1A1A1A] hover:bg-[#1A1A1A]/5 font-sans font-bold text-[10px] uppercase tracking-widest transition-all"
+                            >
+                              Simulate Assistant Output
+                            </button>
+                          </div>
+                        ) : isSimulatingBonus ? (
+                          <div id="simulating-panel" className="border border-slate-200 bg-[#1A1A1A] text-slate-200 p-5 font-mono text-xs min-h-[140px] flex items-center justify-center">
+                            <div className="flex items-center gap-2">
+                              <RefreshCw className="w-4 h-4 animate-spin text-amber-500" />
+                              <span className="tracking-widest uppercase">Executing Golden Response Rule...</span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div id="simulation-panel-output" className="border border-[#1A1A1A] bg-[#1A1A1A] text-[#F5F2ED] p-5 font-mono text-xs relative overflow-hidden shadow-inner selection:bg-slate-700 selection:text-white">
+                            {/* Window bar */}
+                            <div className="flex items-center gap-1.5 border-b border-slate-800 pb-2 mb-3.5">
+                              <span className="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0"></span>
+                              <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shrink-0"></span>
+                              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
+                              <span className="text-[10px] font-bold text-slate-500 ml-2 tracking-wider font-sans">RESPONSE INTERPRETATION · CLAUDE PROFESSIONAL</span>
+                            </div>
+                            <pre className="whitespace-pre-wrap leading-relaxed font-sans text-xs">
+                              {simulationOutputs[activePhrase.id]}
+                            </pre>
+                            <div className="mt-4 pt-2.5 border-t border-slate-800 flex justify-between items-center text-[10px] font-sans text-slate-500">
+                              <span>Output compliant under Fable Module Rules</span>
+                              <button
+                                id="btn-re-run-simulation"
+                                onClick={handleRunSim}
+                                className="text-amber-500 hover:text-amber-300 font-bold uppercase tracking-wider font-sans"
+                              >
+                                Re-run simulation
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                    </div>
+                  );
+                })()}
+
+              </div>
             </div>
           )}
 
