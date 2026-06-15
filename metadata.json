@@ -1,0 +1,6 @@
+{
+  "name": "Fable Brain Kit",
+  "description": "An interactive 8-module playground and toolkit that distills advanced prompting behavior, features side-by-side prompt simulations, and guides the design of high-performing AI prompts.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
